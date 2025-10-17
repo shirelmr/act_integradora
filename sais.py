@@ -108,8 +108,17 @@ def read_file(filename):
         text = text + '$'
         return text
 
-filename = "frankenstein.txt"
-text = read_file(filename)
-T = [ord(c) for c in text]
-SA = sais(T)
-print(SA)
+def main(filename):
+    text = read_file(filename)
+    T = [ord(c) for c in text]
+    return sais(T)
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    else:
+        filename = "frankenstein.txt"
+    
+    SA = main(filename)
+    print(SA)

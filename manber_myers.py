@@ -40,8 +40,17 @@ def suffix_array(T):
 
     return SA
 
-with open('moby_dick.txt', 'r') as file:
-    text = file.read()
+def main(filename):
+    with open(filename, 'r', encoding='utf-8') as file:
+        text = file.read()
+    return suffix_array(text)
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    else:
+        filename = "moby_dick.txt"
     
-SA = suffix_array(text)
-print(SA)
+    SA = main(filename)
+    print(SA)
