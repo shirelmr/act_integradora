@@ -40,5 +40,8 @@ def suffix_array(T):
 
     return SA
 
-SA = suffix_array("mississippi")
+with open('moby_dick.txt', 'r') as file:
+    text = file.read()
+    
+SA = suffix_array(text)
 print(SA)

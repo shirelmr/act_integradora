@@ -56,10 +56,12 @@ def sais(T):
     prev = None
     for i in range(len(SA)):
         if t[SA[i]] == "S" and t[SA[i] - 1] == "L":
-            if prev is not None and T[SA[prev]:LMS[SA[prev]]] != T[SA[i]:LMS[SA[i]]]:
-                name += 1
+            if prev is not None and SA[prev] >= 0 and SA[i] >= 0:
+                if T[SA[prev]:LMS[SA[prev]]] != T[SA[i]:LMS[SA[i]]]:
+                    name += 1
             prev = i
-            namesp[SA[i]] = name
+            if SA[i] >= 0:
+                namesp[SA[i]] = name
 
     names = []
     SApIdx = []
@@ -99,7 +101,15 @@ def sais(T):
 
     return SA
 
-string = "GTCCCGATGTCATGTCAGGA$"
-T = [ord(c) for c in string]
+def read_file(filename):
+    with open(filename, 'r', encoding='utf-8') as file:
+        text = file.read().replace('\n', ' ').replace('\r', '')
+        text = ' '.join(text.split())
+        text = text + '$'
+        return text
+
+filename = "frankenstein.txt"
+text = read_file(filename)
+T = [ord(c) for c in text]
 SA = sais(T)
 print(SA)
