@@ -54,15 +54,15 @@ def test_book(book):
     except Exception as e:
         print(f"✗ Error en SAIS: {str(e)}")
     
-    # Prueba Manber-Myers
-    print("\nEjecutando Manber-Myers...")
-    try:
-        sa_len, time_mm = test_manber_myers(book)
-        print(f"✓ Manber-Myers completado:")
-        print(f"  - Tiempo: {time_mm:.2f} segundos")
-        print(f"  - Longitud del Suffix Array: {sa_len}")
-    except Exception as e:
-        print(f"✗ Error en Manber-Myers: {str(e)}")
+    # # Prueba Manber-Myers
+    # print("\nEjecutando Manber-Myers...")
+    # try:
+    #     sa_len, time_mm = test_manber_myers(book)
+    #     print(f"✓ Manber-Myers completado:")
+    #     print(f"  - Tiempo: {time_mm:.2f} segundos")
+    #     print(f"  - Longitud del Suffix Array: {sa_len}")
+    # except Exception as e:
+    #     print(f"✗ Error en Manber-Myers: {str(e)}")
 
 def main():
     print("\nBenchmark de Algoritmos de Suffix Array")

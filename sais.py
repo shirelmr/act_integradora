@@ -10,10 +10,11 @@ def getBuckets(T):
     return buckets
 
 def sais(T):
-    t = ["_"] * len(T)
+    n = len(T)
+    t = ["_"] * n
     
-    t[len(T) - 1] = "S"
-    for i in range(len(T) - 1, 0, -1):
+    t[n - 1] = "S"
+    for i in range(n - 1, 0, -1):
         if T[i-1] == T[i]:
             t[i - 1] = t[i]
         else:
@@ -22,10 +23,10 @@ def sais(T):
     buckets = getBuckets(T)
 
     count = {}
-    SA = [-1] * len(T)
+    SA = [-1] * n
     LMS = {}
     end = None
-    for i in range(len(T) - 1, 0, -1):
+    for i in range(n - 1, 0, -1):
         if t[i] == "S" and t[i - 1] == "L":
             revoffset = count[T[i]] = count.get(T[i], 0) + 1
             SA[buckets[T[i]][1] - revoffset] = i
@@ -33,39 +34,49 @@ def sais(T):
                 LMS[i] = end
             end = i
 
-    LMS[len(T) - 1] = len(T) - 1
-    count = {}
-    for i in range(len(T)):
+    LMS[n - 1] = n - 1
+    
+    # OPTIMIZACIÓN 1: usar clear() en lugar de crear nuevo diccionario
+    count.clear()
+    for i in range(n):
         if SA[i] >= 0:
-            if t[SA[i] - 1] == "L":
+            if SA[i] > 0 and t[SA[i] - 1] == "L":
                 symbol = T[SA[i] - 1]
                 offset = count.get(symbol, 0)
                 SA[buckets[symbol][0] + offset] = SA[i] - 1
                 count[symbol] = offset + 1
 
-    count = {}
-    for i in range(len(T) - 1, 0, -1):
+    # OPTIMIZACIÓN 1: usar clear() en lugar de crear nuevo diccionario
+    count.clear()
+    for i in range(n - 1, 0, -1):
         if SA[i] > 0:
             if t[SA[i] - 1] == "S":
                 symbol = T[SA[i] - 1]
                 revoffset = count[symbol] = count.get(symbol, 0) + 1
                 SA[buckets[symbol][1] - revoffset] = SA[i] - 1
 
-    namesp = [-1] * len(T)
+    namesp = [-1] * n
     name = 0
     prev = None
     for i in range(len(SA)):
-        if t[SA[i]] == "S" and t[SA[i] - 1] == "L":
-            if prev is not None and SA[prev] >= 0 and SA[i] >= 0:
-                if T[SA[prev]:LMS[SA[prev]]] != T[SA[i]:LMS[SA[i]]]:
+        if SA[i] >= 0 and t[SA[i]] == "S" and SA[i] > 0 and t[SA[i] - 1] == "L":
+            if prev is not None and SA[prev] >= 0:
+                # OPTIMIZACIÓN 2: comparar longitudes antes de hacer slicing
+                start1 = SA[prev]
+                end1 = LMS[SA[prev]]
+                start2 = SA[i]
+                end2 = LMS[SA[i]]
+                
+                if end1 - start1 != end2 - start2:
+                    name += 1
+                elif T[start1:end1] != T[start2:end2]:
                     name += 1
             prev = i
-            if SA[i] >= 0:
-                namesp[SA[i]] = name
+            namesp[SA[i]] = name
 
     names = []
     SApIdx = []
-    for i in range(len(T)):
+    for i in range(n):
         if namesp[i] != -1:
             names.append(namesp[i])
             SApIdx.append(i)
@@ -73,26 +84,27 @@ def sais(T):
     if name < len(names) - 1:
         names = sais(names)
 
-    names = list(reversed(names))
+    # OPTIMIZACIÓN 3: usar reverse() en lugar de list(reversed())
+    names.reverse()
 
-    SA = [-1] * len(T)
+    SA = [-1] * n
     count = {}
     for i in range(len(names)):
         pos = SApIdx[names[i]]
         revoffset = count[T[pos]] = count.get(T[pos], 0) + 1
         SA[buckets[T[pos]][1] - revoffset] = pos
 
-    count = {}
-    for i in range(len(T)):
+    count.clear()
+    for i in range(n):
         if SA[i] >= 0:
-            if t[SA[i] - 1] == "L":
+            if SA[i] > 0 and t[SA[i] - 1] == "L":
                 symbol = T[SA[i] - 1]
                 offset = count.get(symbol, 0)
                 SA[buckets[symbol][0] + offset] = SA[i] - 1
                 count[symbol] = offset + 1
 
-    count = {}
-    for i in range(len(T) - 1, 0, -1):
+    count.clear()
+    for i in range(n - 1, 0, -1):
         if SA[i] > 0:
             if t[SA[i] - 1] == "S":
                 symbol = T[SA[i] - 1]
