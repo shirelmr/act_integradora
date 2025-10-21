@@ -1,0 +1,68 @@
+MANUAL DE USUARIO - IMPLEMENTACIÓN DE ALGORITMOS SUFFIX ARRAY
+=======================================================
+
+Este manual describe cómo utilizar las diferentes implementaciones de algoritmos para Suffix Array
+(SA-IS y Manber-Myers) disponibles en este proyecto.
+
+1. REQUISITOS DEL SISTEMA
+------------------------
+- Python 3.x instalado para las implementaciones en Python
+- Compilador C++ (g++ o similar) para las implementaciones en C++
+- Archivos de texto para realizar las búsquedas
+- Bibliotecas Python requeridas para benchmarking:
+  * memory_profiler
+  * time
+
+2. ESTRUCTURA DE ARCHIVOS
+------------------------
+El proyecto contiene los siguientes archivos principales:
+- sais.py: Implementación del algoritmo SA-IS en Python
+- sais.cpp: Implementación del algoritmo SA-IS en C++
+- manber_myers.py: Implementación del algoritmo Manber-Myers en Python
+- benchmark3.py: Script para realizar pruebas de rendimiento
+- Archivos de texto de ejemplo:
+  * frankenstein.txt
+  * romeo_and_juliet.txt
+  * pride_and_prejudice.txt
+  * alices_adventures.txt
+  * murder_in_the_gilded_cage.txt
+
+3. EJECUTANDO LOS ALGORITMOS
+---------------------------
+
+3.1 Usando la implementación Python de SA-IS:
+    $ python3 sais.py [nombre_archivo]
+    Ejemplo: python3 sais.py frankenstein.txt
+
+3.2 Usando la implementación Python de Manber-Myers:
+    $ python3 manber_myers.py [nombre_archivo]
+    Ejemplo: python3 manber_myers.py frankenstein.txt
+
+3.3 Usando la implementación C++ de SA-IS:
+    $ g++ -o sais sais.cpp
+    $ ./sais [nombre_archivo]
+    Ejemplo: ./sais frankenstein.txt
+
+4. REALIZANDO BÚSQUEDAS
+----------------------
+Todos los algoritmos incluyen una función de búsqueda que permite encontrar
+todas las ocurrencias de un patrón en el texto. Por defecto, buscan la palabra
+"monster", pero esto puede modificarse en el código fuente.
+
+El resultado mostrará:
+- El patrón buscado
+- El número de ocurrencias encontradas
+- Las posiciones exactas de cada ocurrencia en el texto
+
+5. EJECUTANDO BENCHMARKS
+----------------------
+Para comparar el rendimiento de los algoritmos:
+    $ python3 benchmark3.py
+
+El benchmark mostrará:
+- Tiempo de ejecución para cada algoritmo
+- Uso de memoria
+- Comparativas con diferentes tamaños de archivo
+
+
+
