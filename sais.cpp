@@ -29,14 +29,17 @@ map<int, pair<int, int>> getBuckets(const vector<int>& T) {
 vector<int> sais(const vector<int>& T) {
     int n = T.size();
     
-    vector<char> t(n, '_');
-    t[n - 1] = 'S';
+    // optimizatrion: vector<bool> en lugar de vector<char>
+    // true = S-type, false = L-type
+    vector<bool> t(n);
+    
+    t[n - 1] = true;  // 'S'
     
     for (int i = n - 1; i > 0; i--) {
         if (T[i-1] == T[i]) {
             t[i - 1] = t[i];
         } else {
-            t[i - 1] = (T[i-1] < T[i]) ? 'S' : 'L';
+            t[i - 1] = (T[i-1] < T[i]);  // true si S, false si L
         }
     }
     
@@ -47,8 +50,9 @@ vector<int> sais(const vector<int>& T) {
     map<int, int> LMS;
     int end = -1;
     
+    // : t[i] en lugar de t[i] == 'S'
     for (int i = n - 1; i > 0; i--) {
-        if (t[i] == 'S' && t[i - 1] == 'L') {
+        if (t[i] && !t[i - 1]) {  // S-type seguido de L-type
             int revoffset = ++count[T[i]];
             SA[buckets[T[i]].second - revoffset] = i;
             if (end != -1) {
@@ -63,7 +67,7 @@ vector<int> sais(const vector<int>& T) {
     count.clear();
     for (int i = 0; i < n; i++) {
         if (SA[i] >= 0) {
-            if (SA[i] > 0 && t[SA[i] - 1] == 'L') {
+            if (SA[i] > 0 && !t[SA[i] - 1]) {  // L-type
                 int symbol = T[SA[i] - 1];
                 int offset = count[symbol];
                 SA[buckets[symbol].first + offset] = SA[i] - 1;
@@ -75,7 +79,7 @@ vector<int> sais(const vector<int>& T) {
     count.clear();
     for (int i = n - 1; i > 0; i--) {
         if (SA[i] > 0) {
-            if (t[SA[i] - 1] == 'S') {
+            if (t[SA[i] - 1]) {  // S-type
                 int symbol = T[SA[i] - 1];
                 int revoffset = ++count[symbol];
                 SA[buckets[symbol].second - revoffset] = SA[i] - 1;
@@ -88,7 +92,7 @@ vector<int> sais(const vector<int>& T) {
     int prev = -1;
     
     for (int i = 0; i < n; i++) {
-        if (SA[i] >= 0 && t[SA[i]] == 'S' && SA[i] > 0 && t[SA[i] - 1] == 'L') {
+        if (SA[i] >= 0 && t[SA[i]] && SA[i] > 0 && !t[SA[i] - 1]) {
             if (prev != -1 && SA[prev] >= 0) {
                 int start1 = SA[prev];
                 int end1 = LMS[SA[prev]];
@@ -144,7 +148,7 @@ vector<int> sais(const vector<int>& T) {
     count.clear();
     for (int i = 0; i < n; i++) {
         if (SA[i] >= 0) {
-            if (SA[i] > 0 && t[SA[i] - 1] == 'L') {
+            if (SA[i] > 0 && !t[SA[i] - 1]) {  // L-type
                 int symbol = T[SA[i] - 1];
                 int offset = count[symbol];
                 SA[buckets[symbol].first + offset] = SA[i] - 1;
@@ -156,7 +160,7 @@ vector<int> sais(const vector<int>& T) {
     count.clear();
     for (int i = n - 1; i > 0; i--) {
         if (SA[i] > 0) {
-            if (t[SA[i] - 1] == 'S') {
+            if (t[SA[i] - 1]) {  // S-type
                 int symbol = T[SA[i] - 1];
                 int revoffset = ++count[symbol];
                 SA[buckets[symbol].second - revoffset] = SA[i] - 1;
@@ -194,9 +198,9 @@ string read_file(const string& filename) {
 }
 
 // ============================================================================
-// PUNTO 4: DE BUSQUEDA DE SUBCADENAS USANDO SUFFIX ARRAY
+// PUNTO 4: FUNCIÓN DE BÚSQUEDA DE SUBCADENAS USANDO SUFFIX ARRAY
 // Implementa búsqueda binaria según el algoritmo de Manber-Myers
-// Retorna TODAS las posiciones donde aparece el PATORN
+// Retorna TODAS las posiciones donde aparece el patrón
 // ============================================================================
 
 vector<int> search_all_occurrences(const string& text, const vector<int>& SA, const string& pattern) {
