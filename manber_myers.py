@@ -48,10 +48,72 @@ def suffix_array(T):
 
     return SA
 
+# ============================================================================
+# PUNTO 4: BSQUEDA DE SUBCADENAS USANDO SUFFIX ARRAY
+# Implementa búsqueda binaria según el algoritmo de Manber-Myers
+# Retorna TODAS las posiciones donde aparece el PATRON
+# ============================================================================
+
+def search_all_occurrences(text, SA, pattern):
+  
+    n = len(SA)
+    m = len(pattern)
+    occurrences = []
+    
+    left = 0
+    right = n
+    
+    while left < right:
+        mid = (left + right) // 2
+        suffix_start = SA[mid]
+        
+        if suffix_start + m <= len(text):
+            suffix = text[suffix_start:suffix_start + m]
+        else:
+            suffix = text[suffix_start:]
+        
+        if suffix < pattern:
+            left = mid + 1
+        else:
+            right = mid
+    
+    start = left
+    while start < n:
+        suffix_start = SA[start]
+        if suffix_start + m <= len(text):
+            suffix = text[suffix_start:suffix_start + m]
+            if suffix == pattern:
+                occurrences.append(suffix_start)
+                start += 1
+            else:
+                break
+        else:
+            break
+    
+    return sorted(occurrences)
+
+# ============================================================================
+# FIN PUNTO 4
+# ============================================================================
+
 def main(filename):
     with open(filename, 'r', encoding='utf-8') as file:
         text = file.read()
-    return suffix_array(text)
+    
+    SA = suffix_array(text)
+    
+    pattern = "monster"
+    positions = search_all_occurrences(text, SA, pattern)
+    
+    print(f"Patron: '{pattern}'")
+    print(f"Ocurrencias: {len(positions)}")
+    
+    if positions:
+        print(f"Todas las posiciones: {positions}")
+    else:
+        print("No se encontraron ocurrencias")
+    
+    return SA
 
 if __name__ == "__main__":
     import sys
@@ -61,4 +123,3 @@ if __name__ == "__main__":
         filename = "frankenstein.txt"
     
     SA = main(filename)
-    print(SA)
