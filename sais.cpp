@@ -193,6 +193,64 @@ string read_file(const string& filename) {
     return normalized;
 }
 
+// ============================================================================
+// PUNTO 4: DE BUSQUEDA DE SUBCADENAS USANDO SUFFIX ARRAY
+// Implementa búsqueda binaria según el algoritmo de Manber-Myers
+// Retorna TODAS las posiciones donde aparece el PATORN
+// ============================================================================
+
+vector<int> search_all_occurrences(const string& text, const vector<int>& SA, const string& pattern) {
+    int n = SA.size();
+    int m = pattern.length();
+    vector<int> occurrences;
+    
+    int left = 0;
+    int right = n;
+    
+    while (left < right) {
+        int mid = (left + right) / 2;
+        int suffix_start = SA[mid];
+        
+        string suffix = "";
+        if (suffix_start + m <= (int)text.length()) {
+            suffix = text.substr(suffix_start, m);
+        } else {
+            suffix = text.substr(suffix_start);
+        }
+        
+        if (suffix < pattern) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    
+    int start = left;
+    while (start < n) {
+        int suffix_start = SA[start];
+        
+        if (suffix_start + m <= (int)text.length()) {
+            string suffix = text.substr(suffix_start, m);
+            
+            if (suffix == pattern) {
+                occurrences.push_back(suffix_start);
+                start++;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    
+    sort(occurrences.begin(), occurrences.end());
+    return occurrences;
+}
+
+// ============================================================================
+// FIN PUNTO 4
+// ============================================================================
+
 int main(int argc, char* argv[]) {
     string filename = "frankenstein.txt";
     
@@ -209,12 +267,20 @@ int main(int argc, char* argv[]) {
     
     vector<int> SA = sais(T);
     
-    cout << "[";
-    for (size_t i = 0; i < SA.size(); i++) {
-        cout << SA[i];
-        if (i < SA.size() - 1) cout << ", ";
+    string pattern = "monster";
+    vector<int> positions = search_all_occurrences(text, SA, pattern);
+    
+    cout << "Patron: '" << pattern << "'" << endl;
+    cout << "Ocurrencias: " << positions.size() << endl;
+    
+    if (positions.size() > 0) {
+        cout << "Todas las posiciones: ";
+        for (int i = 0; i < (int)positions.size(); i++) {
+            cout << positions[i];
+            if (i < (int)positions.size() - 1) cout << ", ";
+        }
+        cout << endl;
     }
-    cout << "]" << endl;
     
     return 0;
 }
