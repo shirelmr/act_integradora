@@ -36,7 +36,6 @@ def sais(T):
 
     LMS[n - 1] = n - 1
     
-    # OPTIMIZACIÓN 1: usar clear() en lugar de crear nuevo diccionario
     count.clear()
     for i in range(n):
         if SA[i] >= 0:
@@ -46,7 +45,6 @@ def sais(T):
                 SA[buckets[symbol][0] + offset] = SA[i] - 1
                 count[symbol] = offset + 1
 
-    # OPTIMIZACIÓN 1: usar clear() en lugar de crear nuevo diccionario
     count.clear()
     for i in range(n - 1, 0, -1):
         if SA[i] > 0:
@@ -61,7 +59,6 @@ def sais(T):
     for i in range(len(SA)):
         if SA[i] >= 0 and t[SA[i]] == "S" and SA[i] > 0 and t[SA[i] - 1] == "L":
             if prev is not None and SA[prev] >= 0:
-                # OPTIMIZACIÓN 2: comparar longitudes antes de hacer slicing
                 start1 = SA[prev]
                 end1 = LMS[SA[prev]]
                 start2 = SA[i]
@@ -84,7 +81,6 @@ def sais(T):
     if name < len(names) - 1:
         names = sais(names)
 
-    # OPTIMIZACIÓN 3: usar reverse() en lugar de list(reversed())
     names.reverse()
 
     SA = [-1] * n
@@ -120,10 +116,71 @@ def read_file(filename):
         text = text + '$'
         return text
 
+# ============================================================================
+# PUNTO 4:  BuSQUEDA DE SUBCADENAS USANDO SUFFIX ARRAY
+# Implementa búsqueda binaria según el algoritmo de Manber-Myers
+# Retorna TODAS las posiciones donde aparece el PATROM
+# ============================================================================
+
+def search_all_occurrences(text, SA, pattern):
+    
+    n = len(SA)
+    m = len(pattern)
+    occurrences = []
+    
+    left = 0
+    right = n
+    
+    while left < right:
+        mid = (left + right) // 2
+        suffix_start = SA[mid]
+        
+        if suffix_start + m <= len(text):
+            suffix = text[suffix_start:suffix_start + m]
+        else:
+            suffix = text[suffix_start:]
+        
+        if suffix < pattern:
+            left = mid + 1
+        else:
+            right = mid
+    
+    start = left
+    while start < n:
+        suffix_start = SA[start]
+        if suffix_start + m <= len(text):
+            suffix = text[suffix_start:suffix_start + m]
+            if suffix == pattern:
+                occurrences.append(suffix_start)
+                start += 1
+            else:
+                break
+        else:
+            break
+    
+    return sorted(occurrences)
+
+# ============================================================================
+# FIN PUNTO 4
+# ============================================================================
+
 def main(filename):
     text = read_file(filename)
     T = [ord(c) for c in text]
-    return sais(T)
+    SA = sais(T)
+    
+    pattern = "monster"
+    positions = search_all_occurrences(text, SA, pattern)
+    
+    print(f"Patron: '{pattern}'")
+    print(f"Ocurrencias: {len(positions)}")
+    
+    if positions:
+        print(f"Todas las posiciones: {positions}")
+    else:
+        print("No se encontraron ocurrencias")
+    
+    return SA
 
 if __name__ == "__main__":
     import sys
@@ -133,4 +190,3 @@ if __name__ == "__main__":
         filename = "frankenstein.txt"
     
     SA = main(filename)
-    print(SA)
